@@ -1,0 +1,133 @@
+/* Body CSS */
+body {
+    z-index: 0;
+}
+
+/* Menu Header*/
+#menuHeader {
+    position: absolute;
+    top: -1.6rem;
+    right: 26vw;
+    text-align: center;
+
+    font-size: 2.5rem;
+}
+
+/* Menu CSS*/
+#menuDiv {
+    z-index: 1;
+    background-color: rgb(37, 177, 202);
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    filter: blur(0px);
+}
+
+#menuIcon {
+    width: 4rem;
+    height: 4rem;
+}
+
+#menuIcon:hover {
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+/* Menu List CSS */
+#menuElements {
+    position: relative;
+}
+
+#menuElements a {
+    position: absolute;
+    font-weight: bolder;
+    color: rgb(22, 83, 175);
+    height: 4rem;
+    width: 10.25rem;
+    font-size: 1.5rem;
+    right: 35rem;
+    background-color: rgb(25, 199, 230);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#menuElements a:hover {
+    background-color: rgb(42, 159, 226);
+}
+
+/* Menu Animations */
+
+.menuOpen {
+    animation-name: openMenu;
+    animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    animation-duration: 0.35s;
+    rotate: 90deg;
+}
+
+.menuClose {
+    animation-name: closeMenu;
+    animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    animation-duration: 0.35s;
+    rotate: 0deg;
+}
+
+.blurOpen {
+    animation-name: openBlur;
+    animation-timing-function: linear;
+    animation-duration: 0.1s;
+    filter: blur(5px);
+}
+
+.blurClose {
+    animation-name: closeBlur;
+    animation-timing-function: linear;
+    animation-duration: 0.1s;
+    filter: blur(0px);
+}
+
+.spread {
+    animation-name: spreadElements;
+    animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    animation-duration: 0.6s;
+    /* right: var(--distanceToTravel); */
+}
+
+.hide {
+    animation-name: hideElements;
+    animation-timing-function:cubic-bezier(0.075, 0.82, 0.165, 1);
+    animation-duration: 1.5s;
+    right: 25rem;
+}
+
+@keyframes openMenu {
+  from {rotate: 0deg;}
+  to {rotate: 90deg;}
+}
+
+@keyframes closeMenu {
+  from {rotate: 90deg;}
+  to {rotate: 0deg;}
+}
+
+@keyframes openBlur {
+    from {filter: blur(0px)}
+    to {filter: blur(5px)}
+}
+
+@keyframes closeBlur {
+    from {filter: blur(5px)}
+    to {filter: blur(0px)}
+}
+
+@keyframes spreadElements {
+    from {right: 35rem}
+    to {right: var(--distanceToTravel)}
+}
+
+@keyframes hideElements {
+    from {right: var(--distanceToTravel)}
+    to {right: 35rem}
+}

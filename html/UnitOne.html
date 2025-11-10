@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit One</title>
+</head>
+<link rel="stylesheet" href="/css/menu_style.css">
+<link rel="stylesheet" href="/css/projectile_motion.css">
+<body>
+  <div id="menuDiv">
+    <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fassets.stickpng.com%2Fimages%2F588a6507d06f6719692a2d15.png&f=1&nofb=1&ipt=16c269022ad9d8c3d9171644ecba01cce6b0dde0152362ec7fb2203047593066" id="menuIcon">
+    <h1 id="menuHeader">The Ultimate AP Physics Calculator</h1>
+    <div id="menuElements">
+      <a href="/html/index.html">
+        Home
+      </a>
+      <a href="/html/UnitOne.html">
+        Unit 1
+      </a>
+      <a href="">
+        Unit 2
+      </a>
+      <a href="">
+        Unit 3 
+      </a>
+      <a href="">
+        Unit 4
+      </a>
+      <a href="">
+        Unit 5
+      </a>
+      <a href="">
+        Unit 6
+      </a>
+      <a href="">
+        Unit 7
+      </a>
+      <a href="">
+        Unit 8
+      </a>
+    </div>
+  </div>
+  <div id="blur">
+    <canvas id="physicsSim"></canvas>
+    <div class="horizontalSegment">
+      <label>
+        Enter the X-Inital of the shot (m):
+      </label>
+      <input type="number" id="inputX">
+    </div>
+    <div class="horizontalSegment">
+      <label>
+        Enter the Y-Inital of the shot (m):
+      </label>
+      <input type="number" id="inputY">
+    </div>
+    <div class="horizontalSegment">
+      <label>
+        Enter the Velocity of the shot (m/s):
+      </label>
+      <input type="number" id="inputVelocity">
+    </div>
+    <div class="horizontalSegment">
+      <label>
+        Enter the Angle of the shot (°):
+      </label>
+      <input type="number" id="inputAngle">
+    </div>
+    <div class="horizontalSegment">
+      <button id="runSim">
+        Run Simulation
+      </button>
+    </div>
+  </div>
+</body>
+<script src="/scripts/MenuAnimation.js"></script>
+<script src="/scripts/CalcKinStats.js"></script>
+</html>
