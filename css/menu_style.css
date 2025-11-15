@@ -1,16 +1,17 @@
 /* Body CSS */
 body {
+    margin: 0;
     z-index: 0;
 }
 
 /* Menu Header*/
 #menuHeader {
     position: absolute;
-    top: -1.6rem;
-    right: 26vw;
+    top: -2.5vh;
+    margin-left: 27vw;
     text-align: center;
 
-    font-size: 2.5rem;
+    font-size: 2.5vw;
 }
 
 /* Menu CSS*/
@@ -24,8 +25,8 @@ body {
 }
 
 #menuIcon {
-    width: 4rem;
-    height: 4rem;
+    width: 4vw;
+    height: 4vw;
 }
 
 #menuIcon:hover {
@@ -98,7 +99,7 @@ body {
 .hide {
     animation-name: hideElements;
     animation-timing-function:cubic-bezier(0.075, 0.82, 0.165, 1);
-    animation-duration: 1.5s;
+    animation-duration: 1.35s;
     right: 25rem;
 }
 

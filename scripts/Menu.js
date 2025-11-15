@@ -1,6 +1,7 @@
 let menuIcon = document.getElementById("menuIcon");
 let body = document.getElementById("blur");
 let menuElements = document.getElementById("menuElements");
+let menuHeader = document.getElementById("menuHeader");
 
 let isMenuOpen = false;
 
@@ -22,17 +23,16 @@ menuIcon.addEventListener("click", ()=> {
     spreadElements(false);
 });
 
-// SETS TRAVEL FOR MENU ITEMS
-let distanceToTravel = 10;
-
-menuElements.querySelectorAll("a").forEach((element) => {
-    element.style.setProperty('--distanceToTravel', (-distanceToTravel) + "rem");
-    distanceToTravel += 10.215;
-    console.log(element.style.getPropertyValue('--distanceToTravel'))
+document.getElementById("blur").addEventListener("click", () => {
+    isMenuOpen = false;
+    menuIcon.classList.remove("menuOpen");
+    menuIcon.classList.add("menuClose");
+    body.classList.remove("blurOpen");
+    body.classList.add("blurClose");
+    spreadElements(false);
 });
 
 function spreadElements(spreadElements) {
-    menuElements.querySelectorAll("a").forEach((element) => console.log(element.classList));
     if(spreadElements) {
         menuElements.querySelectorAll("a").forEach((element)=> {
             element.classList.remove("hide");
@@ -47,3 +47,26 @@ function spreadElements(spreadElements) {
         element.style.right = "35rem";
     });
 }
+
+
+function sizeMenu() {
+    menuIcon.style.height = "4vw";
+    menuIcon.style.width = "4vw";
+
+    // SETS TRAVEL FOR MENU ITEMS
+    let distanceToTravel = -11;
+    const widthOfUnit =(((window.innerWidth/(9*screen.width))*100) -(12/24));
+
+    menuElements.querySelectorAll("a").forEach((element) => {
+        element.style.setProperty('--distanceToTravel', (distanceToTravel) + "vw");
+        distanceToTravel -= (widthOfUnit);
+        
+        element.style.width = widthOfUnit + "vw";
+    });
+
+    menuHeader.style.left = (((window.innerWidth/(8*screen.width))*100)) + "vw";
+    menuHeader.style.width = (((window.innerWidth/(4*screen.width))*100)) + "vw";
+}
+
+window.addEventListener("resize", sizeMenu());
+sizeMenu();

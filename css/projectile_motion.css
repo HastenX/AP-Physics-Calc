@@ -1,5 +1,8 @@
+
+
 #physicsSim {
-    width: 95.454rem;
-    height: 30rem;
+    position: relative;
+    width: 99.8vw;
+    height: 70vh;
     border: 2px solid black;
 }
