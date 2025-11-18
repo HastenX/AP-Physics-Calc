@@ -1,8 +1,13 @@
-// const vwConversionFactor = 15.0413333333;
-// const vhConversionFactor = 4.68666499666 *0.681436942675;
+import { SigFigs } from "./lib/SigFigs.js";
+
+let sigFigs;
+
 let initalY = document.getElementById("inputY");
 let velocity = document.getElementById("inputVelocity");
 let angle = document.getElementById("inputAngle");
+// initalY.readOnly = "false";
+// velocity.readOnly = "false";
+// angle.readOnly = "false";
 
 let canvas = document.getElementById("physicsSim");
 canvas.style.backgroundColor = "rgba(62, 165, 223, 0.8)";
@@ -16,8 +21,20 @@ document.getElementById("runSim").addEventListener("click", () => {
     velocity = document.getElementById("inputVelocity");
     angle = document.getElementById("inputAngle");
     if(!!initalY.value && !!velocity.value && !!angle.value) {
+        sigFigs = new SigFigs(initalY.value, velocity.value, angle.value);
         runningSim = true;
     }
+});
+
+document.getElementById("clearSim").addEventListener("click", () => {
+    hasLaunchStarted = false;
+    runningSim = false;
+    calledLaunch = false;
+    catapultFrame = -125;
+
+    initalY.readOnly = "";
+    velocity.readOnly = "";
+    angle.readOnly = "";
 });
 
 document.querySelectorAll("input").forEach((element) => {
@@ -90,27 +107,34 @@ function drawShape(shape, angle, fillColor, borderColor, hasCircle=false) {
     sim.closePath();
     sim.beginPath();
 }
-
-function drawIndex(location, text, size, color, isVerticle) {
-    sim.fillStyle = color;
-    sim.font = size+"vh " + "Arial";
-    sim.fillText(text, 
-        text >10 && !isVerticle ? location[0]- vwToPixels(2): location[0], 
-        text >10 && !isVerticle ? location[1]+ vhToPixels(0.5): location[1]);
-    sim.stroke();
-    if(!isVerticle) {
-        drawShape([[location[0]+vwToPixels(2), location[1]],vwToPixels(2),vhToPixels(8), vwToPixels(2), vhToPixels(8)], 0, "white", "transparent");
-        return;
+let xOffset =0
+function drawIndex(location, text, size, color, isHorizontal) {
+    if(!hasLaunchStarted) {
+        sim.fillStyle = color;
+        sim.font = size+"vh " + "Arial";
+        if(sigFigs) {
+            sigFigs.applySigFigs(Number(text));
+            text = sigFigs.output;
+            xOffset = String(text).length * .9
+        }
+        sim.fillText(text, 
+            isHorizontal ? location[0]- vwToPixels(xOffset): location[0] + vwToPixels(2), 
+            isHorizontal ? location[1]: location[1]+ vhToPixels(-10));
+        sim.restore();
+        sim.stroke();
+        if(!isHorizontal) {
+            drawShape([[location[0]+vwToPixels(2), location[1]-vhToPixels(4)],vwToPixels(2),vhToPixels(8), vwToPixels(2), vhToPixels(8)], 0, "white", "transparent");
+            return;
+        }
+        drawShape([[location[0] - vwToPixels(0.25), location[1]+vhToPixels(12)],vwToPixels(2),vhToPixels(8), vwToPixels(2), vhToPixels(8)], 90, "white", "transparent");
     }
-    drawShape([[location[0] - vwToPixels(0.25), location[1]+vhToPixels(12)],vwToPixels(2),vhToPixels(8), vwToPixels(2), vhToPixels(8)], 90, "white", "transparent");
 }
 
 function drawCatapult(rotate,yOffset) {
     let xOffset=18
-    drawShape([[vwToPixels(xOffset), vhToPixels(yOffset)],vwToPixels(8),vhToPixels(2), vwToPixels(8), vhToPixels(2)],45, "grey", "transparent");
-    drawShape([[vwToPixels(xOffset + 5.5), vhToPixels(yOffset-1)],vwToPixels(8),vhToPixels(3), vwToPixels(8), vhToPixels(3)],0, "grey", "transparent");
-    drawShape([[vwToPixels(xOffset+ 5.95), vhToPixels(yOffset+12)],vwToPixels(10),vhToPixels(2), vwToPixels(10), vhToPixels(2)],rotate, "grey", "transparent", true);
-    // drawShape([[vwToPixels(50), vhToPixels(50)],vwToPixels(12),vhToPixels(2), vwToPixels(12), vhToPixels(2)],-145, "grey", "transparent", true);
+    drawShape([[vwToPixels(xOffset), vhToPixels(yOffset+8)],vwToPixels(8),vhToPixels(2), vwToPixels(8), vhToPixels(2)],45, "grey", "transparent");
+    drawShape([[vwToPixels(xOffset + 5.5), vhToPixels(yOffset+7)],vwToPixels(8),vhToPixels(3), vwToPixels(8), vhToPixels(3)],0, "grey", "transparent");
+    drawShape([[vwToPixels(xOffset+ 5.95), vhToPixels(yOffset+20)],vwToPixels(10),vhToPixels(2), vwToPixels(10), vhToPixels(2)],rotate, "grey", "transparent", true);
 }
 let catapultFrame = -125;
 
@@ -120,28 +144,25 @@ let halfTime, maxTime;
 function setPhysicsSim() {
     if(!hasLaunchStarted){
         sim.clearRect(vwToPixels(0), vhToPixels(0),vwToPixels(100), vhToPixels(100));
+
+        // Borders
+        drawShape([[vwToPixels(0), vhToPixels(8)],vwToPixels(100),vhToPixels(10), vwToPixels(100), vhToPixels(10)], 90, "grey", "transparent");
+        drawShape([[vwToPixels(5), vhToPixels(0)],vwToPixels(5),vhToPixels(100), vwToPixels(5), vhToPixels(100)], 270, "grey", "transparent");
+
+        // Y 0
+        drawIndex([vwToPixels(2), vhToPixels(12)], "0", 1, "white", false);
+        // X 0
+        drawIndex([vwToPixels(23.5), vhToPixels(1)], "0", 1, "white", true);
     }
-    // Default UI
-    // Borders
-    drawShape([[vwToPixels(0), vhToPixels(8)],vwToPixels(100),vhToPixels(10), vwToPixels(100), vhToPixels(10)], 90, "grey", "transparent");
-    drawShape([[vwToPixels(5), vhToPixels(0)],vwToPixels(5),vhToPixels(100), vwToPixels(5), vhToPixels(100)], 270, "grey", "transparent");
     
     // Catapult:
     if(runningSim){
+        initalY.readOnly = "true";
+        velocity.readOnly = "true";
+        angle.readOnly = "true";
         runningSimulation();
     }
     drawCatapult(catapultFrame, initalY.value==0 ? 8 : 30);
-
-    // x and y intercepts
-    // Y
-    drawIndex([vwToPixels(2), vhToPixels(8)], "0", 1, "white", false);
-    // drawIndex([vwToPixels(2), vhToPixels(90)], "a", 1, "white", false);
-    // X
-    drawIndex([vwToPixels(23.5), vhToPixels(1)], "0", 1, "white", true);
-    // drawIndex([vwToPixels(90), vhToPixels(1)], "b", 1, "white", true);
-    // sim.stroke();
-    // sim.stroke();
-    // platform offset
     requestAnimationFrame(setPhysicsSim);
 }
 function runningSimulation() {
@@ -151,7 +172,7 @@ function runningSimulation() {
     maxTime = halfTime + Math.pow((2*yMax)/9.8,.5);
     xMax = Math.abs(velocity.value*Math.cos(angle.value*Math.PI/180)*maxTime);
 
-    drawIndex([vwToPixels(2), vhToPixels(90)], yMax, 1, "white", false);
+    drawIndex([vwToPixels(2), vhToPixels(88)], yMax, 1, "white", false);
     if(initalY != 0) {
         drawIndex([vwToPixels(2), vhToPixels((initalY.value/yMax *87)+8)], initalY.value, 1, "white", false);
     }
@@ -192,18 +213,22 @@ function updateItem(pose) {
         sim.stroke();
     }
 }
-let called = false
+let calledLaunch = false
+let x,y;
 function timedUpdate(){
-    if(!called) {
-        called = true
+    if(!calledLaunch) {
+        calledLaunch = true
         var miliSeconds = 0;
-        var timer = setInterval(function(){
+        var timer = setInterval(() => {
             miliSeconds += 10;
             x= Number(velocity.value)*Math.cos(angle.value*Math.PI/180)*(miliSeconds/1000);
             y= Number(initalY.value) + (Number(velocity.value)*Math.sin(Number(angle.value*Math.PI/180))*(miliSeconds/1000)) + (-.5*9.8*(Math.pow((miliSeconds/1000),2)));
             updateItem([vwToPixels((x/xMax*(90-20))+5+20) ,vhToPixels((y/yMax*82)+8)]);
-            console.log([vwToPixels((x/xMax*90)+5) ,vhToPixels((y/yMax*82)+8)])
-            if (miliSeconds >  maxTime*1000) {
+            if (miliSeconds >  maxTime*1000 || !hasLaunchStarted) {
+                initalY.readOnly = "";
+                velocity.readOnly = "";
+                angle.readOnly = "";
+
                 clearInterval(timer);
             }
         }, 10);
