@@ -156,7 +156,7 @@ function runningSimulation() {
         drawIndex([vwToPixels(2), vhToPixels((initalY.value/yMax *87)+8)], initalY.value, 1, "white", false);
     }
     drawIndex([vwToPixels(95), vhToPixels(1)], xMax, 1, "white", true)
-    drawIndex([vwToPixels((((xHalf/xMax) * 100)+5)), vhToPixels(1)], xHalf, 1, "white", true)
+    drawIndex([vwToPixels((xHalf/xMax*(90-20))+5+20), vhToPixels(1)], xHalf, 1, "white", true)
     if(catapultFrame < 0) {
         catapultFrame++;
     }  
@@ -201,7 +201,7 @@ function timedUpdate(){
             miliSeconds += 10;
             x= Number(velocity.value)*Math.cos(angle.value*Math.PI/180)*(miliSeconds/1000);
             y= Number(initalY.value) + (Number(velocity.value)*Math.sin(Number(angle.value*Math.PI/180))*(miliSeconds/1000)) + (-.5*9.8*(Math.pow((miliSeconds/1000),2)));
-            updateItem([vwToPixels((x/xMax*90)+5) ,vhToPixels((y/yMax*82)+8)]);
+            updateItem([vwToPixels((x/xMax*(90-20))+5+20) ,vhToPixels((y/yMax*82)+8)]);
             console.log([vwToPixels((x/xMax*90)+5) ,vhToPixels((y/yMax*82)+8)])
             if (miliSeconds >  maxTime*1000) {
                 clearInterval(timer);
