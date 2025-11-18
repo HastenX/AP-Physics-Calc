@@ -24,12 +24,14 @@ menuIcon.addEventListener("click", ()=> {
 });
 
 document.getElementById("blur").addEventListener("click", () => {
-    isMenuOpen = false;
-    menuIcon.classList.remove("menuOpen");
-    menuIcon.classList.add("menuClose");
-    body.classList.remove("blurOpen");
-    body.classList.add("blurClose");
-    spreadElements(false);
+    if(isMenuOpen) {    
+        isMenuOpen = false;
+        menuIcon.classList.remove("menuOpen");
+        menuIcon.classList.add("menuClose");
+        body.classList.remove("blurOpen");
+        body.classList.add("blurClose");
+        spreadElements(false);
+    }
 });
 
 function spreadElements(spreadElements) {
