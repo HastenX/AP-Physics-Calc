@@ -5,9 +5,6 @@ let sigFigs;
 let initalY = document.getElementById("inputY");
 let velocity = document.getElementById("inputVelocity");
 let angle = document.getElementById("inputAngle");
-// initalY.readOnly = "false";
-// velocity.readOnly = "false";
-// angle.readOnly = "false";
 
 let canvas = document.getElementById("physicsSim");
 canvas.style.backgroundColor = "rgba(62, 165, 223, 0.8)";
@@ -27,18 +24,14 @@ document.getElementById("runSim").addEventListener("click", () => {
 });
 
 document.getElementById("clearSim").addEventListener("click", () => {
-    hasLaunchStarted = false;
-    runningSim = false;
-    calledLaunch = false;
-    catapultFrame = -125;
-
-    initalY.readOnly = "";
-    velocity.readOnly = "";
-    angle.readOnly = "";
+    clearSimulation();
 });
 
 document.querySelectorAll("input").forEach((element) => {
     element.addEventListener("input", ()=> {
+        if(runningSim) {
+            clearSimulation();
+        }
         if((element.value < 0 && element != angle && element != velocity) && element.value != "") {
             element.value = 0
         }
@@ -47,6 +40,13 @@ document.querySelectorAll("input").forEach((element) => {
         }
     });
 });
+
+function clearSimulation() {
+    hasLaunchStarted = false;
+    runningSim = false;
+    calledLaunch = false;
+    catapultFrame = -125;
+}
 
 function vwToPixels(vw) {
     return vw * (canvas.width)/100;
@@ -97,15 +97,14 @@ function drawShape(shape, angle, fillColor, borderColor, hasCircle=false) {
         sim.arc(newShape[1][1][0], newShape[1][1][1], 3, 0, 2 * Math.PI)
         launchPoint = [newShape[1][1][0], newShape[1][1][1]];
     }
+    sim.fillStyle = fillColor;
+    sim.strokeStyle = borderColor;
     sim.lineTo(newShape[1][1][0], newShape[1][1][1]);
     sim.lineTo(newShape[2][1][0], newShape[2][1][1]);
     sim.lineTo(newShape[3][1][0], newShape[3][1][1]);
-    sim.fillStyle = fillColor;
     sim.fill();
-    sim.strokeStyle = borderColor;
     sim.stroke();
     sim.closePath();
-    sim.beginPath();
 }
 let xOffset =0
 function drawIndex(location, text, size, color, isHorizontal) {
@@ -119,8 +118,7 @@ function drawIndex(location, text, size, color, isHorizontal) {
         }
         sim.fillText(text, 
             isHorizontal ? location[0]- vwToPixels(xOffset): location[0] + vwToPixels(2), 
-            isHorizontal ? location[1]: location[1]+ vhToPixels(-10));
-        sim.restore();
+            isHorizontal ? location[1]: location[1]+ vhToPixels(-7.75));
         sim.stroke();
         if(!isHorizontal) {
             drawShape([[location[0]+vwToPixels(2), location[1]-vhToPixels(4)],vwToPixels(2),vhToPixels(8), vwToPixels(2), vhToPixels(8)], 0, "white", "transparent");
@@ -132,8 +130,8 @@ function drawIndex(location, text, size, color, isHorizontal) {
 
 function drawCatapult(rotate,yOffset) {
     let xOffset=18
-    drawShape([[vwToPixels(xOffset), vhToPixels(yOffset+8)],vwToPixels(8),vhToPixels(2), vwToPixels(8), vhToPixels(2)],45, "grey", "transparent");
-    drawShape([[vwToPixels(xOffset + 5.5), vhToPixels(yOffset+7)],vwToPixels(8),vhToPixels(3), vwToPixels(8), vhToPixels(3)],0, "grey", "transparent");
+    drawShape([[vwToPixels(xOffset+6), vhToPixels(yOffset+8 +9)],vwToPixels(30),vhToPixels(2), vwToPixels(30), vhToPixels(2)],225, "grey", "transparent");
+    drawShape([[vwToPixels(xOffset + 7), vhToPixels(yOffset+7+16)],vwToPixels(30),vhToPixels(3), vwToPixels(30), vhToPixels(3)], 180, "grey", "transparent");
     drawShape([[vwToPixels(xOffset+ 5.95), vhToPixels(yOffset+20)],vwToPixels(10),vhToPixels(2), vwToPixels(10), vhToPixels(2)],rotate, "grey", "transparent", true);
 }
 let catapultFrame = -125;
@@ -141,28 +139,31 @@ let catapultFrame = -125;
 let yMax; 
 let xHalf, xMax;
 let halfTime, maxTime;
+
+let setInitalHeight = 0;
 function setPhysicsSim() {
-    if(!hasLaunchStarted){
+    if(catapultFrame < -3){
+        console.log("e")
         sim.clearRect(vwToPixels(0), vhToPixels(0),vwToPixels(100), vhToPixels(100));
 
         // Borders
         drawShape([[vwToPixels(0), vhToPixels(8)],vwToPixels(100),vhToPixels(10), vwToPixels(100), vhToPixels(10)], 90, "grey", "transparent");
         drawShape([[vwToPixels(5), vhToPixels(0)],vwToPixels(5),vhToPixels(100), vwToPixels(5), vhToPixels(100)], 270, "grey", "transparent");
+    }
+    
+    // Catapult:
+    if(runningSim){
+        runningSimulation();
+    }
 
+    if(!hasLaunchStarted){
+        drawCatapult(catapultFrame, setInitalHeight);
         // Y 0
         drawIndex([vwToPixels(2), vhToPixels(12)], "0", 1, "white", false);
         // X 0
         drawIndex([vwToPixels(23.5), vhToPixels(1)], "0", 1, "white", true);
     }
-    
-    // Catapult:
-    if(runningSim){
-        initalY.readOnly = "true";
-        velocity.readOnly = "true";
-        angle.readOnly = "true";
-        runningSimulation();
-    }
-    drawCatapult(catapultFrame, initalY.value==0 ? 8 : 30);
+
     requestAnimationFrame(setPhysicsSim);
 }
 function runningSimulation() {
@@ -172,19 +173,22 @@ function runningSimulation() {
     maxTime = halfTime + Math.pow((2*yMax)/9.8,.5);
     xMax = Math.abs(velocity.value*Math.cos(angle.value*Math.PI/180)*maxTime);
 
-    drawIndex([vwToPixels(2), vhToPixels(88)], yMax, 1, "white", false);
-    if(initalY != 0) {
-        drawIndex([vwToPixels(2), vhToPixels((initalY.value/yMax *87)+8)], initalY.value, 1, "white", false);
+    setInitalHeight = (initalY.value/yMax *87)-36;
+    if(catapultFrame < -2) {
+        drawIndex([vwToPixels(2), vhToPixels(88)], yMax, 1, "white", false);
+        if(initalY.value != 0) {
+            drawIndex([vwToPixels(2), vhToPixels((initalY.value/yMax *87)+10)], initalY.value, 1, "white", false);
+        }
+        drawIndex([vwToPixels(95), vhToPixels(1)], xMax, 1, "white", true)
+        drawIndex([vwToPixels((xHalf/xMax*(90-20))+5+20), vhToPixels(1)], xHalf, 1, "white", true)
     }
-    drawIndex([vwToPixels(95), vhToPixels(1)], xMax, 1, "white", true)
-    drawIndex([vwToPixels((xHalf/xMax*(90-20))+5+20), vhToPixels(1)], xHalf, 1, "white", true)
     if(catapultFrame < 0) {
         catapultFrame++;
     }  
-    if(catapultFrame > -80 && catapultFrame < 0) {
+    if(catapultFrame > -80 && catapultFrame < 1) {
         catapultFrame++;
     }   
-    if(catapultFrame >= 0) {
+    if(catapultFrame >= 1) {
         launchController();
     }
 }
@@ -193,12 +197,6 @@ let currentPose;
 function launchController() {
     if(!hasLaunchStarted) {
         hasLaunchStarted = true;
-        // currentPose = [vwToPixels(25),vwToPixels(20)];
-        // sim.arc(launchPoint[0], launchPoint[1], 3, 0, 2 * Math.PI);
-        // sim.fillStyle = "white";
-        // sim.fill();
-        // sim.strokeStyle = "transparent";
-        // sim.stroke();
         updateItem(launchPoint[0], launchPoint[1])
     }
     timedUpdate();
@@ -206,6 +204,7 @@ function launchController() {
 
 function updateItem(pose) {
     if(pixelsToVw(pose[1]*-1) >= 0) {
+        sim.moveTo(pose[0], pose[1]);
         sim.arc(pose[0], pose[1], 3, 0, 2 * Math.PI);
         sim.fillStyle = "white";
         sim.fill();
@@ -218,20 +217,19 @@ let x,y;
 function timedUpdate(){
     if(!calledLaunch) {
         calledLaunch = true
-        var miliSeconds = 0;
-        var timer = setInterval(() => {
-            miliSeconds += 10;
-            x= Number(velocity.value)*Math.cos(angle.value*Math.PI/180)*(miliSeconds/1000);
-            y= Number(initalY.value) + (Number(velocity.value)*Math.sin(Number(angle.value*Math.PI/180))*(miliSeconds/1000)) + (-.5*9.8*(Math.pow((miliSeconds/1000),2)));
+        let timeMili = 0;
+        let timer = setInterval(() => {
+            timeMili += 5;
+            x= Number(velocity.value)*Math.cos(angle.value*Math.PI/180)*(timeMili/1000);
+            y= Number(initalY.value) + (Number(velocity.value)*Math.sin(Number(angle.value*Math.PI/180))*(timeMili/1000)) + (-.5*9.8*(Math.pow((timeMili/1000),2)));
             updateItem([vwToPixels((x/xMax*(90-20))+5+20) ,vhToPixels((y/yMax*82)+8)]);
-            if (miliSeconds >  maxTime*1000 || !hasLaunchStarted) {
-                initalY.readOnly = "";
-                velocity.readOnly = "";
-                angle.readOnly = "";
-
+            if(timeMili % 10) {
+                document.getElementById("timeOutput").innerText = "Time of Launch: ".concat(timeMili/1000).concat("S");
+            }
+            if (timeMili >  maxTime*1000 || !hasLaunchStarted) {
                 clearInterval(timer);
             }
-        }, 10);
+        }, 5);
     }
 }
 
