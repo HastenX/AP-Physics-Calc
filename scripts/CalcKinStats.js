@@ -175,12 +175,25 @@ function runningSimulation() {
 
     setInitalHeight = (initalY.value/yMax *87)-36;
     if(catapultFrame < -2) {
+        let temp;
         drawIndex([vwToPixels(2), vhToPixels(88)], yMax, 1, "white", false);
         if(initalY.value != 0) {
             drawIndex([vwToPixels(2), vhToPixels((initalY.value/yMax *87)+10)], initalY.value, 1, "white", false);
         }
         drawIndex([vwToPixels(95), vhToPixels(1)], xMax, 1, "white", true)
         drawIndex([vwToPixels((xHalf/xMax*(90-20))+5+20), vhToPixels(1)], xHalf, 1, "white", true)
+
+        sigFigs.applySigFigs(xMax);
+        temp = sigFigs.output;
+        document.getElementById("xMaxOutput").innerText = "X Distance Traveled: ".concat(temp).concat("m");
+        temp = []
+        sigFigs.applySigFigs(xHalf);
+        temp.push(sigFigs.output);
+        sigFigs.applySigFigs(yMax);
+        temp.push(sigFigs.output);
+        document.getElementById("yMaxOutput").innerText = "Maximum Point: (".concat(temp[0]).concat(",").concat(temp[1]).concat(")");
+
+
     }
     if(catapultFrame < 0) {
         catapultFrame++;
@@ -223,10 +236,11 @@ function timedUpdate(){
             x= Number(velocity.value)*Math.cos(angle.value*Math.PI/180)*(timeMili/1000);
             y= Number(initalY.value) + (Number(velocity.value)*Math.sin(Number(angle.value*Math.PI/180))*(timeMili/1000)) + (-.5*9.8*(Math.pow((timeMili/1000),2)));
             updateItem([vwToPixels((x/xMax*(90-20))+5+20) ,vhToPixels((y/yMax*82)+8)]);
-            if(timeMili % 10) {
+            if(timeMili % 10 == 0) {
                 document.getElementById("timeOutput").innerText = "Time of Launch: ".concat(timeMili/1000).concat("S");
             }
             if (timeMili >  maxTime*1000 || !hasLaunchStarted) {
+                document.getElementById("timeOutput").innerText = "Time of Launch: ".concat(maxTime).concat("S");
                 clearInterval(timer);
             }
         }, 5);
