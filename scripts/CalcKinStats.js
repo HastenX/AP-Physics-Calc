@@ -167,11 +167,12 @@ function setPhysicsSim() {
     requestAnimationFrame(setPhysicsSim);
 }
 function runningSimulation() {
-    halfTime = (Number(velocity.value))*Math.sin(angle.value*Math.PI/180)/9.8;
-    yMax = (Number(initalY.value) + Number(velocity.value*Math.sin(angle.value*Math.PI/180)*halfTime) - Number(.5*9.81*Math.pow(halfTime,2)));
-    xHalf = Math.abs(velocity.value*Math.cos(angle.value*Math.PI/180)*halfTime);
+    trueAngle= angle.value%90;
+    halfTime = (Number(velocity.value))*Math.sin(trueAngle*Math.PI/180)/9.8;
+    yMax = (Number(initalY.value) + Number(velocity.value*Math.sin(trueAngle*Math.PI/180)*halfTime) - Number(.5*9.81*Math.pow(halfTime,2)));
+    xHalf = Math.abs(velocity.value*Math.cos(trueAngle*Math.PI/180)*halfTime);
     maxTime = halfTime + Math.pow((2*yMax)/9.8,.5);
-    xMax = Math.abs(velocity.value*Math.cos(angle.value*Math.PI/180)*maxTime);
+    xMax = Math.abs(velocity.value*Math.cos(trueAngle*Math.PI/180)*maxTime);
 
     setInitalHeight = (initalY.value/yMax *87)-36;
     if(catapultFrame < -2) {
@@ -206,7 +207,6 @@ function runningSimulation() {
     }
 }
 let hasLaunchStarted;
-let currentPose;
 function launchController() {
     if(!hasLaunchStarted) {
         hasLaunchStarted = true;
@@ -227,14 +227,16 @@ function updateItem(pose) {
 }
 let calledLaunch = false
 let x,y;
+let trueAngle;
 function timedUpdate(){
     if(!calledLaunch) {
         calledLaunch = true
         let timeMili = 0;
         let timer = setInterval(() => {
+            console.log(trueAngle)
             timeMili += 5;
-            x= Number(velocity.value)*Math.cos(angle.value*Math.PI/180)*(timeMili/1000);
-            y= Number(initalY.value) + (Number(velocity.value)*Math.sin(Number(angle.value*Math.PI/180))*(timeMili/1000)) + (-.5*9.8*(Math.pow((timeMili/1000),2)));
+            x= Number(velocity.value)*Math.cos(trueAngle*Math.PI/180)*(timeMili/1000);
+            y= Number(initalY.value) + (Number(velocity.value)*Math.sin(Number(trueAngle*Math.PI/180))*(timeMili/1000)) + (-.5*9.8*(Math.pow((timeMili/1000),2)));
             updateItem([vwToPixels((x/xMax*(90-20))+5+20) ,vhToPixels((y/yMax*82)+8)]);
             if(timeMili % 10 == 0) {
                 document.getElementById("timeOutput").innerText = "Time of Launch: ".concat(timeMili/1000).concat("S");
